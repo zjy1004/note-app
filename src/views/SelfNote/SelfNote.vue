@@ -5,28 +5,29 @@
       <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length > 0" class="content">
         <div class="c-waybill">
           <ul class="c-w-wrap">
-            <li class="c-w-item" v-for="(item, index) in articleData.slice(0, 2)" :key="index">
+            <li class="c-w-item" v-for="(item, index) in articleData.slice(0, 3)" :key="index">
               <div class="top"  @click="handleDetail(item._id)" >
                 <div class="t-left">
                   <img :src="item.author.avatar" alt="">
                 </div>
                 <div class="t-right">
-                  <div class="t-r-top">{{item.author.username}}</div>
-                  <div class="t-r-bottom">{{item.updateTime}}</div>
+                  <!-- <div class="t-r-top">{{item.author.username}}</div> -->
+                  <!-- <div class="t-r-bottom">{{item.updateTime}}</div> -->
                   <div class="title">
                     <div class="t-title">{{item.title}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
+                  <div class="t-r-bottom">{{item.updateTime}}</div>
                 </div>
               </div>
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
-                <div class="b-look">&nbsp;浏览 {{item.readnumber}} 次</div>
+                <div class="b-look" style="font-size: 12px;">&nbsp;浏览 {{item.readnumber}} 次</div>
                 <div class="b-del" @click="del(item._id)"><div class="img"></div>&nbsp;</div>
               </div>
             </li>
           </ul>
-          <div v-if="articleData.length > 2" class="c-w-more">
+          <div v-if="articleData.length > 3" class="c-w-more">
             <span class="a" @click="handleMore()">查看更多笔记 ></span>
           </div>
         </div>
@@ -58,6 +59,10 @@ export default {
       articleData: []
     }
   },
+  created () {
+    this.getData()
+    console.log(this.renderTime('2019-04-15T02:32:46.941Z'))
+  },
   methods: {
     // 删除文章
     del (id) {
@@ -71,11 +76,19 @@ export default {
         }
       })
     },
+    renderTime (date) {
+      var dateee = new Date(date).toJSON()
+      return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+    },
     // 获取文章
     getData () {
       this.$axios.post('/articleContent', this.param).then(res => {
         if (res.code === 200) {
-          this.articleData = res.data
+          this.articleData = res.data.map(item => {
+            item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            return item
+          })
+          console.log(this.articleData)
         }
         if (res.code === 403) {
           this.$vux.toast.show({
@@ -107,9 +120,6 @@ export default {
     handleDetail (id) {
       this.$router.push({name: 'NoteDetail', query: {id: id}})
     }
-  },
-  created () {
-    this.getData()
   }
 }
 </script>
@@ -159,65 +169,67 @@ export default {
       flex: 1;
       padding: 20px 30px;
       .c-w-wrap {
-        height: 990x;
+        height: 990px;
         width: 100%;
         overflow: hidden;
         .c-w-item {
-          height: 300px;
+          height: 240px;
           width: 100%;
           background: #fff;
-          border-radius: 20px;
+          border-radius: 15px;
           margin-bottom: 30px;
           // border: 2px solid #ddd;
         }
         .top {
           width: 100%;
-          height: 140px;
+          height: 80px;
           display: flex;
-          border-bottom: 1px solid #eee;
+          border-bottom: 2px solid #fafafa;
           // border-bottom: 1px solid #eee;
           .t-left {
-            width: 140px;
-            height: 140px;
+            width: 80px;
+            height: 80px;
+            padding: 7px;
             margin-right: 20px;
-            border-radius: 70px;
+            // border-radius: 50px;
             img {
               width: 100%;
               height: 100%;
-              border-radius: 55px;
+              border-radius: 50%;
             }
           }
           .t-right {
-            width: 500;
-            height: 140px;
+            width: 580px;
+            height: 80px;
             display: flex;
             flex-direction: column;
             .t-r-top {
               width: 100%;
-              height: 50px;
-              line-height: 50px;
-              font-size: 34px;
+              height: 40px;
+              line-height: 40px;
+              font-size: 30px;
               font-weight: 500;
               color: #24282E;
             }
             .t-r-bottom {
               width: 100%;
-              height: 30px;
-              line-height: 30px;
-              font-size: 26px;
+              height: 20px;
+              line-height: 20px;
+              font-size: 20px;
               color: #5C6066;
+              margin-top: 15px;
             }
             .title {
-              height: 60px;
+              height: 40px;
               width: 100%;
               display: flex;
               justify-content: space-between;
               .t-title {
-                height: 60px;
-                width: 400px;
+                height: 40px;
+                width: 450px;
                 font-size: 30px;
                 color: #24282E;
-                line-height: 60px;
+                line-height: 40px;
                 // text-indent: 2em;
               }
               .life {
@@ -230,10 +242,10 @@ export default {
                 color: #02D48A;
               }
               .t-category {
-                height: 60px;
+                height: 40px;
                 width: 100px;
-                font-size: 30px;
-                line-height: 60px;
+                font-size: 32px;
+                line-height: 40px;
                 text-align: right;
               }
             }
@@ -247,7 +259,7 @@ export default {
           margin-top: 10px;
           font-size: 28px;
           color: #5C6066;
-          border-bottom: 1px solid #eee;
+          border-bottom: 2px solid #fafafa;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -264,7 +276,7 @@ export default {
             width: 500px;
             height: 20px;
             line-height: 20px;
-            font-size: 20px;
+            font-size: 12px;
             color: #5C6066;
           }
           .b-del {
@@ -274,8 +286,8 @@ export default {
             text-align: right;
             font-size: 28px;
             .img {
-              width: 30px;
-              height: 30px;
+              width: 25px;
+              height: 25px;
               background: url('../../../static/image/del.png') no-repeat;
               background-size:  100% 100%;
             }

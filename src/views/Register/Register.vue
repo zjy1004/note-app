@@ -52,7 +52,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-import ChangePwdAjax from '@/api/changePwd/changePwd'
 import { XHeader } from 'vux'
 import { Field, CellGroup, Uploader } from 'vant'
 export default {
@@ -78,7 +77,7 @@ export default {
     onRead (file) {
       this.$refs.upImg.src = file.content
       console.log(file)
-      this.avatar = file.content
+      this.form.avatar = file.content
     },
     confirm () {
       if (this.form.password === '') {
@@ -89,29 +88,25 @@ export default {
       } else if (this.form.password.length < 6 || this.form.password.length > 16) {
         this.$vux.toast.show({
           type: 'warn',
-          text: '新密码长度在6到16个字符'
+          text: '密码长度在6到16个字符'
         })
-      } else if (this.form.newPass === this.form.oldPass) {
+      } else if (this.form.password !== this.form.passagain) {
         this.$vux.toast.show({
           type: 'warn',
-          text: '新密码不能与初始化密码相同'
+          text: '密码不一致，请重新输入'
         })
       } else {
-        let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
-        this.firstLogin = userInfoObj.firstLogin
-        if (this.firstLogin === 0) {
-          ChangePwdAjax.ChangePwd(this.form).then(res => {
-            if (res.code === 200) {
-              this.$vux.toast.show({
-                type: 'success',
-                text: '修改成功'
-              })
-              setTimeout(() => {
-                this.$router.push({name: 'Index'})
-              }, 500)
-            }
-          })
-        }
+        this.$axios.post('/user', this.form).then(res => {
+          if (res.code === 200) {
+            this.$vux.toast.show({
+              type: 'success',
+              text: '注册成功'
+            })
+            setTimeout(() => {
+              this.$router.push({name: 'Login'})
+            }, 1000)
+          }
+        })
       }
     }
   }

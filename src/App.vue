@@ -48,7 +48,7 @@ body{
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #eee;
+  background: #fafafa;
 }
 /* .isPadTop{
   padding-top: 50px;

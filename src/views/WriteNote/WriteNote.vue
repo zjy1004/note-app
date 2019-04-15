@@ -79,7 +79,20 @@ export default {
         category: '',
         img: ''
       },
-      categories: []
+      categories: [
+        {
+          name: '学习',
+          _id: '5ca9c6102d4285220ca91cac'
+        },
+        {
+          name: '心情',
+          _id: '5ca9c61c2d4285220ca91cad'
+        },
+        {
+          name: '生活',
+          _id: '5cb04ca4aadf111eb0dfea2e'
+        }
+      ]
     }
   },
   created () {
@@ -88,7 +101,7 @@ export default {
   methods: {
     getCategory () {
       this.$axios.get('/category').then(res => {
-        this.categories = res.data
+        // this.categories = res.data
       })
     },
     onRead (file) {
