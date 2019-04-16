@@ -4,24 +4,13 @@
          我的
       </div>
      <div class="content">
-       <!-- <div class="c-user">
-         <ul @click="routeLink('UserInfo')" class="c-u-wrap">
-           <li class="user-icon">
-           </li>
-            <li class="user-name">
-              <div class="title">用户名称</div>
-              <div class="name">{{userInfo.userName}}</div>
-            </li>
-            <li class="user-arrow">
-              <i class="iconfont icon-zuanshi"></i>
-            </li>
-         </ul>
-       </div> -->
        <div class="c-user1">
-          <div class="user-con"></div>
+          <div class="user-con">
+            <img :src="userInfo.avatar" alt="">
+          </div>
           <div class="user-info-con">
             <div class="user-name-label">用户名称</div>
-            <div class="user-name">{{userInfo.userName}}</div>
+            <div class="user-name">{{userInfo.username}}</div>
           </div>
           <div class="my-info" @click="routeLink('UserInfo')">
             <div class="icon-image"></div>
@@ -29,29 +18,13 @@
           </div>
         </div>
        <div class="c-menu">
-         <div class="li" @click="routeLink('CardBag')">
+         <div class="li" @click="routeLink('NoteSpace')">
           <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-yinxingqia002"></i></div>
-             <div class="title">我的卡包</div>
+             <div class="title">笔记圈</div>
            </div>
           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
         </div>
-         <div class="li">
-          <a class="iphoneA" v-if="isIos" :href="'tel://'+telNum">
-            <div class="c-m-left">
-              <div class="icon"><a :href="'tel://'+telNum"><i class="iconfont icon-unie737"></i></a></div>
-              <div class="title">在线客服</div>
-           </div>
-           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
-          </a>
-          <a v-else @click="clickService()">
-            <div class="c-m-left">
-              <div class="icon"><i class="iconfont icon-unie737"></i></div>
-              <div class="title">在线客服</div>
-            </div>
-            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
-          </a>
-         </div>
          <div class="li" @click="routeLink('Setting')">
            <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-shezhi"></i></div>
@@ -59,29 +32,26 @@
            </div>
            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
          </div>
-         <div class="li" @click="routeLink('More')">
+         <div class="li" @click="confirmLoginOut()">
            <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-dashujukeshihuaico-"></i></div>
-             <div class="title">协议公示</div>
+             <div class="title">退出登录</div>
            </div>
            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
          </div>
        </div>
      </div>
-     <div v-transfer-dom>
-        <confirm v-model="showService"
-          :confirm-text="'呼叫'"
-          :cancel-text="'取消'"
-          @on-cancel="showService = false"
-          @on-confirm="onConfirm">
-          <p style="text-align:center;">
-            {{telNum}}
-            <!-- <a :href="tel">4000088122</a> -->
-          </p>
-        </confirm>
-      </div>
       <footer-bar />
       <router-view></router-view>
+      <div v-transfer-dom>
+      <confirm v-model="showLoginOut"
+        :confirm-text="'退出登录'"
+        :cancel-text="'取消'"
+        @on-cancel="showLoginOut = false"
+        @on-confirm="logOut">
+        <p style="text-align:center;">确定要退出登录？</p>
+      </confirm>
+    </div>
    </div>
 </template>
 
@@ -93,15 +63,16 @@ export default {
   components: { FooterBar, Confirm },
   data () {
     return {
+      showLoginOut: false,
       isIos: true,
       showService: false,
       telNum: '4000088122',
       userInfo: {
-        userName: '', // 姓名
-        phone: '', // 联系电话
-        account: '', // 登录账号
-        logisticsName: '', // 物流公司名称
-        stationName: '' // 所属站点
+        avatar: '', // 头像
+        desc: '', // 个行签名
+        email: '', // 账号
+        sex: '', // 性别
+        username: '' // 昵称
       }
     }
   },
@@ -123,19 +94,12 @@ export default {
       let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
       this.userInfo = {...userInfoObj}
     },
-    onConfirm () {
-      this.showService = false
+    confirmLoginOut () {
+      this.showLoginOut = true
     },
-    toAndroid () {
-      try {
-        window.android.callPhone(this.telNum)
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    // 安卓点击客服
-    clickService () {
-      this.toAndroid()
+    logOut () {
+      sessionStorage.removeItem('userInfo')
+      this.$router.push({name: 'Login'})
     }
   }
 }
@@ -183,8 +147,11 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: url('../../image/logo.png') no-repeat center center;
-        background-size: 100% 100%;
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
       }
       .user-info-con{
         width: 250px;

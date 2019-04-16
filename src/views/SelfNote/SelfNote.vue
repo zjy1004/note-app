@@ -39,19 +39,34 @@
         </div>
       </van-pull-refresh>
     <footer-bar />
+    <div v-transfer-dom>
+      <confirm v-model="showDel"
+        :confirm-text="'确认删除'"
+        :cancel-text="'取消'"
+        @on-cancel="showDel = false"
+        @on-confirm="confirmDel(delId)">
+        <p style="text-align:center;">确定删除此文章？</p>
+      </confirm>
+    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
 import FooterBar from '@/components/FooterBar/FooterBar'
 // import WaybillAjax from '@/api/WayBill/WayBill'
+import { Confirm, TransferDomDirective as TransferDom } from 'vux'
 import { PullRefresh } from 'vant'
 export default {
   name: 'SelfNote',
-  components: { FooterBar, [PullRefresh.name]: PullRefresh },
+  components: { FooterBar, [PullRefresh.name]: PullRefresh, Confirm },
+  directives: {
+    TransferDom
+  },
   data () {
     return {
+      showDel: false,
       isLoading: false,
+      delId: '',
       param: {
         categoryId: '',
         updateTime: ''
@@ -66,15 +81,22 @@ export default {
   methods: {
     // 删除文章
     del (id) {
-      this.$axios.delete(`/article/${id}`).then(res => {
+      this.showDel = true
+      this.delId = id
+    },
+    delAjax (val) {
+      this.$axios.delete(`/article/${val}`).then(res => {
         if (res.code === 200) {
           this.$vux.toast.show({
             type: 'success',
-            text: '刷新成功！'
+            text: '删除成功！'
           })
           this.getData()
         }
       })
+    },
+    confirmDel (val) {
+      this.delAjax(val)
     },
     renderTime (date) {
       var dateee = new Date(date).toJSON()
@@ -125,11 +147,16 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import '~vux/src/styles/1px.less';
+@import '../../style/base.less';
 .waybill {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
+  .weui-mask {
+    background: rgba(255, 255, 255, 0.5)
+  }
   .c-header {
       height: 90px;
       display: flex;
@@ -179,6 +206,9 @@ export default {
           border-radius: 15px;
           margin-bottom: 30px;
           // border: 2px solid #ddd;
+        }
+        .weui-mask {
+          background: rgba(255, 255, 255, 0.5)
         }
         .top {
           width: 100%;

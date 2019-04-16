@@ -44,7 +44,7 @@
                   <!-- <div class="t-r-top">{{item.author.username}}</div> -->
                   <!-- <div class="t-r-bottom">{{item.updateTime}}</div> -->
                   <div class="title">
-                    <div class="t-title">{{item.title}}</div>
+                    <div class="t-title">{{item.author.username}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
                   <div class="t-r-bottom">{{item.updateTime}}</div>
@@ -53,9 +53,7 @@
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
                 <div class="b-look">&nbsp;浏览 {{item.readnumber}} 次</div>
-                <div class="b-del" @click="del(item._id)">
-                  <div class="img"></div>&nbsp;
-                </div>
+                <div class="no_praise" :class="{'praise': item.isPraise === 1}" @click="item.isPraise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
               </div>
             </li>
           </ul>
@@ -96,20 +94,11 @@
         </div>
       </popup>
     </div>
-    <div v-transfer-dom>
-      <confirm v-model="showDel"
-        :confirm-text="'确认删除'"
-        :cancel-text="'取消'"
-        @on-cancel="showDel = false"
-        @on-confirm="confirmDel(delId)">
-        <p style="text-align:center;">确定删除此文章？</p>
-      </confirm>
-    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput, Confirm } from 'vux'
+import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput } from 'vux'
 import { PullRefresh } from 'vant'
 export default {
   name: 'MoreNote',
@@ -122,16 +111,13 @@ export default {
     FlexboxItem,
     TransferDom,
     Datetime,
-    XInput,
-    Confirm
+    XInput
   },
   directives: {
     TransferDom
   },
   data () {
     return {
-      showDel: false,
-      delId: '',
       articleData: [],
       param: {
         categoryId: '',
@@ -150,23 +136,47 @@ export default {
   methods: {
     // 删除文章
     del (id) {
-      this.showDel = true
-      this.delId = id
-      // debugger
-    },
-    delAjax (val) {
-      this.$axios.delete(`/article/${val}`).then(res => {
+      this.$axios.delete(`/article/${id}`).then(res => {
         if (res.code === 200) {
           this.$vux.toast.show({
             type: 'success',
-            text: '删除成功！'
+            text: '刷新成功！'
           })
           this.getData()
         }
       })
     },
-    confirmDel (val) {
-      this.delAjax(val)
+    praise (id) { // 赞
+      this.$axios.patch(`/addCommonnum/${id}`).then(res => {
+        if (res.code === 200) {
+          this.$vux.toast.show({
+            type: 'success',
+            text: res.msg
+          })
+          this.getData()
+        } else {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: res.msg
+          })
+        }
+      })
+    },
+    cancelPraise (id) { // 取消赞
+      this.$axios.patch(`/reduceCommonnum/${id}`).then(res => {
+        if (res.code === 200) {
+          this.$vux.toast.show({
+            type: 'success',
+            text: res.msg
+          })
+          this.getData()
+        } else {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: res.msg
+          })
+        }
+      })
     },
     // 获取分类
     getCategory () {
@@ -196,7 +206,7 @@ export default {
     },
     // 获取文章
     getData () {
-      this.$axios.post('/articleContent', this.param).then(res => {
+      this.$axios.post('/allArticleContent', this.param).then(res => {
         if (res.code === 200) {
           this.articleData = res.data.map(item => {
             item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
@@ -520,7 +530,7 @@ export default {
             font-size: 12px;
             color: #5C6066;
           }
-          .b-del {
+          .no_praise {
             width: 40px;
             height: 30px;
             line-height: 30px;
@@ -529,7 +539,20 @@ export default {
             .img {
               width: 25px;
               height: 25px;
-              background: url('../../../static/image/del.png') no-repeat;
+              background: url('../../../static/image/no-praise.png') no-repeat;
+              background-size:  100% 100%;
+            }
+          }
+          .praise {
+            width: 40px;
+            height: 30px;
+            line-height: 30px;
+            text-align: right;
+            font-size: 28px;
+            .img {
+              width: 25px;
+              height: 25px;
+              background: url('../../../static/image/praise.png') no-repeat;
               background-size:  100% 100%;
             }
           }

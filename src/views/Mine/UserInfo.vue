@@ -6,30 +6,29 @@
       :left-options="{backText: ''}"
     />
     <group>
-      <cell title="姓名" :value="userInfo.userName"></cell>
-      <cell title="联系电话" :value="userInfo.phone"></cell>
-      <cell title="登录账号" :value="userInfo.account"></cell>
+      <cell title="用户名" :value="userInfo.email"></cell>
+      <cell title="昵称" :value="userInfo.username"></cell>
+      <cell title="性别" :value="userInfo.sex === '' ? '无' : userInfo.sex "></cell>
     </group>
     <group label-width="112px">
-      <cell title="经销商公司" :value="userInfo.dealerName"></cell>
-      <cell title="经营地址" :value="userInfo.address"></cell>
+      <cell title="个行签名" :value="userInfo.desc === '' ? '无' : userInfo.desc "></cell>
+      <!-- <cell title="经营地址" :value="userInfo.address"></cell> -->
     </group>
   </div>
 </template>
 
 <script>
 import { XHeader, Group, Cell } from 'vux'
-import MyCenterAjax from '@/api/MyCenter/MyCenter'
 export default {
   name: 'UserInfo',
   data () {
     return {
       userInfo: {
-        userName: '', // 姓名
-        phone: '', // 联系电话
-        account: '', // 登录账号
-        dealerName: '', // 经销商公司名称
-        address: '' // 经营地址
+        avatar: '', // 头像
+        desc: '', // 个行签名
+        email: '', // 账号
+        sex: '', // 性别
+        username: '' // 昵称
       }
     }
   },
@@ -44,16 +43,10 @@ export default {
   methods: {
     queryDetail () {
       let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
-      this.userInfo.userName = userInfoObj.userName
-      this.userInfo.phone = userInfoObj.phone
-      this.userInfo.account = userInfoObj.account
-      let clientId = userInfoObj.clientId
-      MyCenterAjax.queryInfo({clientId}).then((response) => {
-        if (response.code === 200) {
-          this.userInfo.dealerName = response.data.clientName || ''
-          this.userInfo.address = response.data.address || ''
-        }
-      })
+      this.userInfo.username = userInfoObj.username
+      this.userInfo.desc = userInfoObj.desc
+      this.userInfo.sex = userInfoObj.sex
+      this.userInfo.email = userInfoObj.email
     }
   }
 }

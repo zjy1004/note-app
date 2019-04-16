@@ -65,6 +65,11 @@ export default new Router({
       component: () => import('@/views/NoteSpace/NoteSpace')
     },
     {
+      path: '/moreNoteSpace',
+      name: 'MoreNoteSpace',
+      component: () => import('@/views/NoteSpace/MoreNoteSpace')
+    },
+    {
       path: '/firstChangePwd',
       name: 'FirstChangePwd',
       component: () => import('@/views/FirstChangePwd/FirstChangePwd')

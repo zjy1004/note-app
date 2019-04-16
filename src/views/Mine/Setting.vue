@@ -10,17 +10,6 @@
       <cell title="清除缓存" @click.native="clear">{{strorageVal}}</cell>
       <cell title="版本信息" value="v1.0"></cell>
     </group>
-    <div class="code-con">
-      <div class="ios-con download-con">
-        <img src="../../image/ios.png" alt="ios">
-        <div class="text">ios下载</div>
-      </div>
-      <div class="android-con download-con">
-        <img src="../../image/android.png" alt="android">
-        <div class="text">android下载</div>
-      </div>
-    </div>
-    <div class="login-out-con" @click=confirmLoginOut>退出登录</div>
     <div v-transfer-dom>
       <confirm v-model="showClear"
         :confirm-text="'确认清除'"
@@ -28,15 +17,6 @@
         @on-cancel="showClear = false"
         @on-confirm="clearStorage">
         <p style="text-align:center;">确定清除缓存？</p>
-      </confirm>
-    </div>
-    <div v-transfer-dom>
-      <confirm v-model="showLoginOut"
-        :confirm-text="'退出登录'"
-        :cancel-text="'取消'"
-        @on-cancel="showLoginOut = false"
-        @on-confirm="logOut">
-        <p style="text-align:center;">确定要退出登录？</p>
       </confirm>
     </div>
   </div>
@@ -86,15 +66,6 @@ export default {
         type: 'success',
         text: '清除成功！'
       })
-    },
-    confirmLoginOut () {
-      this.showLoginOut = true
-    },
-    logOut () {
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('userInfo')
-      sessionStorage.removeItem('driverInfo')
-      this.$router.push({name: 'Login'})
     }
   }
 }

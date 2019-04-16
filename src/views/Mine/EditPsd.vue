@@ -10,11 +10,11 @@
       <p class="findPsd">修改密码</p>
       <div class="main">
         <h5>旧密码</h5>
-        <input type="password" v-model="form.oldPass" placeholder="请输入旧密码">
+        <input type="password" v-model="form.oldPassword" placeholder="请输入旧密码">
       </div>
       <div class="main">
         <h5>新密码</h5>
-        <input type="password" v-model="form.newPass" placeholder="请输入新密码">
+        <input type="password" v-model="form.newPassword" placeholder="请输入新密码">
       </div>
       <div class="btn_f">
         <span class="sureBtn" @click="sure()">确定</span>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import LoginAjax from '@/api/Login/Login'
+// import LoginAjax from '@/api/Login/Login'
 
 import { XHeader } from 'vux'
 export default {
@@ -32,8 +32,8 @@ export default {
   data () {
     return {
       form: {
-        oldPass: '',
-        newPass: ''
+        oldPassword: '',
+        newPassword: ''
       }
     }
   },
@@ -44,19 +44,19 @@ export default {
   },
   methods: {
     sure () {
-      if (this.form.oldPass === '') {
+      if (this.form.oldPassword === '') {
         this.$vux.toast.show({
           type: 'warn',
           text: '请输入旧密码'
         })
-      } else if (this.form.oldPass !== '') {
-        if (this.form.newPass === '') {
+      } else if (this.form.oldPassword !== '') {
+        if (this.form.newPassword === '') {
           this.$vux.toast.show({
             type: 'warn',
             text: '请输入新密码'
           })
         } else {
-          if (this.form.newPass.length < 6 || this.form.newPass.length > 16) {
+          if (this.form.newPassword.length < 6 || this.form.newPassword.length > 16) {
             this.$vux.toast.show({
               type: 'warn',
               text: '新密码长度在 6 到 16 个字符'
@@ -68,17 +68,17 @@ export default {
       }
     },
     updatePsd (val) {
-      LoginAjax.updatePsd(val).then(res => {
+      this.$axios.post('/editPwd', val).then(res => {
         if (res.code === 200) {
-          this.$router.back(-1)
           this.$vux.toast.show({
             type: 'success',
-            text: '密码修改成功'
+            text: '修改成功,请重新登录'
           })
+          this.$router.push({name: 'Login'})
         } else {
           this.$vux.toast.show({
             type: 'warn',
-            text: res.message
+            text: res.msg
           })
         }
       })
