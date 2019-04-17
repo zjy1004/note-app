@@ -27,7 +27,7 @@
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
                 <div class="b-look" style="font-size: 12px;">&nbsp;浏览 {{item.readnumber}} 次</div>
-                <div class="no_praise" :class="{'praise': item.isPraise === 1}" @click="item.isPraise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
+                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
               </div>
             </li>
           </ul>
@@ -58,6 +58,8 @@ export default {
     return {
       isLoading: false,
       praiseShow: false,
+      userId: '',
+      userInfo: {},
       param: {
         categoryId: '',
         updateTime: ''
@@ -67,6 +69,7 @@ export default {
   },
   created () {
     this.getData()
+    this.queryUserInfo()
   },
   methods: {
     praise (id) { // 赞
@@ -105,12 +108,27 @@ export default {
       var dateee = new Date(date).toJSON()
       return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
     },
+    queryUserInfo () {
+      let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.userInfo = {...userInfoObj}
+      this.userId = this.userInfo.userId
+      console.log(this.userId)
+    },
     // 获取文章
     getData () {
       this.$axios.post('/allArticleContent', this.param).then(res => {
         if (res.code === 200) {
           this.articleData = res.data.map(item => {
             item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            if (item.praiseList.length > 0) {
+              if (item.praiseList.includes(this.userId)) {
+                item.praise = 1
+              } else {
+                item.praise = 0
+              }
+            } else {
+              item.praise = 0
+            }
             return item
           })
           console.log(this.articleData)

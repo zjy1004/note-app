@@ -53,7 +53,7 @@
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
                 <div class="b-look">&nbsp;浏览 {{item.readnumber}} 次</div>
-                <div class="no_praise" :class="{'praise': item.isPraise === 1}" @click="item.isPraise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
+                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
               </div>
             </li>
           </ul>
@@ -123,6 +123,8 @@ export default {
         categoryId: '',
         updateTime: ''
       },
+      userId: '',
+      userInfo: {},
       categories: [],
       lifeId: '',
       studyId: '',
@@ -145,6 +147,12 @@ export default {
           this.getData()
         }
       })
+    },
+    queryUserInfo () { // 获取用户信息
+      let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.userInfo = {...userInfoObj}
+      this.userId = this.userInfo.userId
+      console.log(this.userId)
     },
     praise (id) { // 赞
       this.$axios.patch(`/addCommonnum/${id}`).then(res => {
@@ -210,8 +218,18 @@ export default {
         if (res.code === 200) {
           this.articleData = res.data.map(item => {
             item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            if (item.praiseList.length > 0) {
+              if (item.praiseList.includes(this.userId)) {
+                item.praise = 1
+              } else {
+                item.praise = 0
+              }
+            } else {
+              item.praise = 0
+            }
             return item
           })
+          console.log(this.articleData)
         }
         if (res.code === 403) {
           this.$vux.toast.show({
@@ -284,6 +302,7 @@ export default {
   created () {
     this.getCategory()
     this.getData()
+    this.queryUserInfo()
   },
   computed: {
     categoryStatus () {
