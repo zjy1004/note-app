@@ -40,12 +40,13 @@
         </div>
         <div class="upLoader">
           <van-uploader :after-read="onRead">
-            <img src="../../../static/image/addImg.png" ref="upImg" alt="">
+            <img v-if="routeFrom === 'new'" src="../../../static/image/addImg.png" ref="upImg" alt="">
+            <img v-if="routeFrom === 'edit'" :src="form.img" ref="upImg" alt="">
           </van-uploader>
         </div>
       </div>
       <div class="footer">
-        <button class="f-button" :class="{'disabled-class': !componyButtonDisabed}" :disabled="!componyButtonDisabed" @click="save()">保存</button>
+        <button class="f-button" :class="{'disabled-class': !componyButtonDisabed}" :disabled="!componyButtonDisabed" @click="routeFrom === 'new' ? save() : editSave()">保存</button>
       </div>
     </div>
   </div>
@@ -72,6 +73,7 @@ export default {
   },
   data () {
     return {
+      routeFrom: '',
       form: {
         content: '',
         contentText: '',
@@ -96,6 +98,11 @@ export default {
     }
   },
   created () {
+    this.routeFrom = this.$route.query.from
+    if (this.$route.query.from === 'edit') {
+      let id = this.$route.query.id
+      this.getArticleData(id)
+    }
     this.getCategory()
   },
   methods: {
@@ -122,6 +129,32 @@ export default {
             text: res.msg
           })
         }
+      })
+    },
+    editSave () {
+      let id = this.$route.query.id
+      this.$axios.patch(`/article/${id}`, this.form).then(res => {
+        if (res.code === 200) {
+          this.$vux.toast.show({
+            type: 'success',
+            text: res.msg
+          })
+          this.$router.push({name: 'NoteDetail', query: {id: id, from: 'afterEdit'}})
+        } else {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: res.msg
+          })
+        }
+      })
+    },
+    getArticleData (val) {
+      this.$axios.get(`/articleById/${val}`).then(res => {
+        console.log(res)
+        this.form.contentText = res.data.contentText
+        this.form.title = res.data.title
+        this.form.img = res.data.img
+        this.form.category = res.data.category._id
       })
     },
     inputIdNumber () {

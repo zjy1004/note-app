@@ -3,7 +3,9 @@
      <x-header
       title="笔记详情"
       :left-options="{backText: ''}"
-    />
+      >
+      <div v-if="this.$route.query.from === 'self'" @click="editArticle()" class="choose-btn" slot="right">修改</div>
+     </x-header>
     <div class="d-wrap">
       <div class="wrap">
         <div class="w-header">
@@ -61,6 +63,10 @@ export default {
     this.getData()
   },
   methods: {
+    editArticle () {
+      let id = this.$route.query.id
+      this.$router.push({name: 'WriteNote', query: {id: id, from: 'edit'}})
+    },
     renderTime (date) {
       var dateee = new Date(date).toJSON()
       return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
@@ -261,6 +267,16 @@ export default {
       margin: 0 auto;
       span{
         .mixin-sc(36px;#1A1A1A);
+      }
+    }
+    .vux-header-right{
+      top: 0px!important;
+      .choose-btn{
+        width: 90px;
+        height: 90px;
+        line-height: 90px;
+        text-align: center;
+        .mixin-sc(30px;@color-extrude);
       }
     }
   }

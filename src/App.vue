@@ -1,7 +1,6 @@
 <template>
-  <div id="app" :class="{'isPadTop': isPadTop,'isPadBottom': isX}">
-    <!-- <index v-if="showIndex()"/>
-    <router-view v-if="!showIndex()"/> -->
+  <!-- <div id="app" :class="{'isPadTop': isPadTop,'isPadBottom': isX}"> -->
+  <div id="app">
     <router-view></router-view>
   </div>
 </template>
@@ -19,13 +18,13 @@ export default {
     this.isX = this.isIphoneX()
   },
   computed: {
-    isPadTop () {
-      if (this.$route.name === 'Treasure' || this.$route.name === 'Login') {
-        return false
-      } else {
-        return true
-      }
-    }
+    // isPadTop () {
+    //   if (this.$route.name === 'Treasure' || this.$route.name === 'Login') {
+    //     return false
+    //   } else {
+    //     return true
+    //   }
+    // }
   },
   components: {
     Index

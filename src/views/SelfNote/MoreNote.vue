@@ -81,7 +81,7 @@
             <div class="dateLi">
               <datetime
                 v-model="param.updateTime"
-                placeholder="开始时间"
+                placeholder="选择日期"
                 @on-change="changeDate"
                 @on-cancel="log('cancel')"
                 @on-confirm="onConfirm"
@@ -256,7 +256,7 @@ export default {
     },
     // 文章详情
     handleDetail (id) {
-      this.$router.push({name: 'NoteDetail', query: {id: id}})
+      this.$router.push({name: 'NoteDetail', query: {id: id, from: 'self'}})
     },
     // 点击显示单选框
     handleSelect () {
@@ -617,7 +617,7 @@ export default {
         width: 100%;
         height: 100px;
         display: flex;
-        justify-content: center;
+        // justify-content: center;
         margin-top: 40px;
         .dateLi {
           width: 40%;

@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     toWriteNote () {
-      this.$router.push({name: 'WriteNote'})
+      this.$router.push({name: 'WriteNote', query: {from: 'new'}})
     },
     getDate (date) {
       let currentDate = new Date(date)

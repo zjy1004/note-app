@@ -36,6 +36,9 @@
       <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0" class="noBill">
         <div class="imgWrap">
           <img src="../../image/noInfo.png" alt="">
+          <div class="c-w-more">
+            <span class="a" @click="handleToWrite()">去写笔记 ></span>
+          </div>
         </div>
       </van-pull-refresh>
     <footer-bar />
@@ -79,6 +82,9 @@ export default {
     console.log(this.renderTime('2019-04-15T02:32:46.941Z'))
   },
   methods: {
+    handleToWrite () {
+      this.$router.push({name: 'WriteNote', query: {from: 'new'}})
+    },
     // 删除文章
     del (id) {
       this.showDel = true
@@ -140,7 +146,7 @@ export default {
     },
     // 文章详情
     handleDetail (id) {
-      this.$router.push({name: 'NoteDetail', query: {id: id}})
+      this.$router.push({name: 'NoteDetail', query: {id: id, from: 'self'}})
     }
   }
 }
@@ -353,6 +359,18 @@ export default {
       align-items: center;
       flex-direction: column;
       justify-content: center;
+      .c-w-more {
+        height: 75px;
+        width: 100%;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        .a {
+          color: #3573EE;
+          font-size: 32px;
+        }
+      }
       img {
         width: 290px;
         height: 220px;

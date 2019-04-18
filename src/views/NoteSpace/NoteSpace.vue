@@ -161,7 +161,7 @@ export default {
     },
     // 文章详情
     handleDetail (id) {
-      this.$router.push({name: 'NoteDetail', query: {id: id}})
+      this.$router.push({name: 'NoteDetail', query: {id: id, from: 'space'}})
     }
   }
 }

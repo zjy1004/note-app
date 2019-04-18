@@ -5,9 +5,6 @@ import UserInfo from '@/views/Mine/UserInfo'
 import Setting from '@/views/Mine/Setting'
 import EditPsd from '@/views/Mine/EditPsd'
 import StatePage from '@/components/StatePage/StatePage'
-import CashWithdrawalDetail from '@/views/CashWithdrawal/CashWithdrawalDetail'
-import RecordOfTotalWithdrawalAmount from '@/views/CashWithdrawal/RecordOfTotalWithdrawalAmount'
-import RecordOfTotalCollectingGoods from '@/views/CashWithdrawal/RecordOfTotalCollectingGoods'
 
 Vue.use(Router)
 
@@ -70,74 +67,14 @@ export default new Router({
       component: () => import('@/views/NoteSpace/MoreNoteSpace')
     },
     {
-      path: '/firstChangePwd',
-      name: 'FirstChangePwd',
-      component: () => import('@/views/FirstChangePwd/FirstChangePwd')
-    },
-    {
-      path: '/tuoPayRegister',
-      name: 'TuoPayRegister',
-      component: () => import('@/views/TuoPayRegister/TuoPayRegister')
-    },
-    {
-      path: '/bindCard',
-      name: 'BindCard',
-      component: () => import('@/views/BindCard/BindCard')
-    },
-    {
-      path: '/reBind',
-      name: 'ReBind',
-      component: () => import('@/views/BindCard/ReBind')
-    },
-    {
-      path: '/treasure',
-      name: 'Treasure',
-      component: () => import('@/views/Treasure/Treasure')
-    },
-    {
-      path: '/withdraw-deposit',
-      name: 'WithdrawDeposit',
-      component: () => import('@/views/Treasure/WithdrawDeposit/WithdrawDeposit')
-    },
-    {
-      path: '/cart-total',
-      name: 'CartTotal',
-      component: () => import('@/views/Treasure/WithdrawDeposit/subpage/CartTotal/CartTotal')
-    },
-    {
-      path: '/waybill',
-      name: 'Waybill',
-      component: () => import('@/views/Waybill/Waybill')
-    },
-    {
-      path: '/moreWaybill',
-      name: 'MoreWaybill',
-      component: () => import('@/views/Waybill/MoreWaybill')
-    },
-    {
-      path: '/waybillDetail',
-      name: 'WaybillDetail',
-      component: () => import('@/views/Waybill/WaybillDetail')
+      path: '/updateUserInfo',
+      name: 'UpdateUserInfo',
+      component: () => import('@/views/Mine/UpdateUserInfo')
     },
     {
       path: '/mine',
       name: 'Mine',
       component: () => import('@/views/Mine/Mine')
-    },
-    {
-      path: '/clause-detail',
-      name: 'ClauseDetail',
-      component: () => import('@/views/Mine/ClauseDetail')
-    },
-    {
-      path: '/more',
-      name: 'More',
-      component: () => import('@/views/Mine/More')
-    },
-    {
-      path: '/cardBag',
-      name: 'CardBag',
-      component: () => import('@/views/Mine/CardBag')
     },
     {
       path: '/upLoader',
@@ -163,21 +100,6 @@ export default new Router({
       path: '/statePage',
       name: 'StatePage',
       component: StatePage
-    },
-    {
-      path: '/cashWithdrawalDetail',
-      name: 'CashWithdrawalDetail',
-      component: CashWithdrawalDetail
-    },
-    {
-      path: '/recordOfTotalWithdrawalAmount',
-      name: 'RecordOfTotalWithdrawalAmount',
-      component: RecordOfTotalWithdrawalAmount
-    },
-    {
-      path: '/recordOfTotalCollectingGoods',
-      name: 'RecordOfTotalCollectingGoods',
-      component: RecordOfTotalCollectingGoods
     }
   ]
 })

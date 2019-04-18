@@ -20,21 +20,21 @@
        <div class="c-menu">
          <div class="li" @click="routeLink('NoteSpace')">
           <div class="c-m-left">
-             <div class="icon"><i class="iconfont icon-yinxingqia002"></i></div>
-             <div class="title">笔记圈</div>
+             <div class="icon"><i class="iconfont icon-pengyouquan1"></i></div>
+             <div class="title">云笔记</div>
            </div>
           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
         </div>
          <div class="li" @click="routeLink('Setting')">
            <div class="c-m-left">
-             <div class="icon"><i class="iconfont icon-shezhi"></i></div>
+             <div class="icon"><i class="iconfont icon-ai-set"></i></div>
              <div class="title">设置</div>
            </div>
            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
          </div>
          <div class="li" @click="confirmLoginOut()">
            <div class="c-m-left">
-             <div class="icon"><i class="iconfont icon-dashujukeshihuaico-"></i></div>
+             <div class="icon"><i class="iconfont icon-tuichu"></i></div>
              <div class="title">退出登录</div>
            </div>
            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
@@ -57,6 +57,7 @@
 
 <script type="text/ecmascript-6">
 import { TransferDom, Confirm } from 'vux'
+import {mapState} from 'vuex'
 import FooterBar from '@/components/FooterBar/FooterBar'
 export default {
   name: 'Mine',
@@ -66,14 +67,14 @@ export default {
       showLoginOut: false,
       isIos: true,
       showService: false,
-      telNum: '4000088122',
-      userInfo: {
-        avatar: '', // 头像
-        desc: '', // 个行签名
-        email: '', // 账号
-        sex: '', // 性别
-        username: '' // 昵称
-      }
+      telNum: '4000088122'
+      // userInfo: {
+      //   avatar: '', // 头像
+      //   desc: '', // 个行签名
+      //   email: '', // 账号
+      //   sex: '', // 性别
+      //   username: '' // 昵称
+      // }
     }
   },
   directives: {
@@ -84,20 +85,31 @@ export default {
     if (phoneType !== 'iPhone') {
       this.isIos = false
     }
-    this.queryDetail()
+    // this.queryDetail()
+  },
+  computed: {
+    ...mapState(['userInfo'])
   },
   methods: {
     routeLink (name) {
       this.$router.push({name})
     },
-    queryDetail () {
-      let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
-      this.userInfo = {...userInfoObj}
-    },
+    // queryDetail () {
+    //   let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
+    //   this.userInfo = {...userInfoObj}
+    // },
     confirmLoginOut () {
       this.showLoginOut = true
     },
     logOut () {
+      let userInfo = {
+        avatar: '',
+        email: '',
+        username: '',
+        desc: '',
+        sex: ''
+      }
+      this.$store.commit('CHANGE_userInfo', userInfo)
       sessionStorage.removeItem('userInfo')
       this.$router.push({name: 'Login'})
     }

@@ -13,12 +13,12 @@
 </template>
 
 <script type="text/ecmascript-6">
-import Treasure from '../Treasure/Treasure'
-import Waybill from '../Waybill/Waybill'
+import NoteIndex from '../NoteIndex/NoteIndex'
+import SelfNote from '../SelfNote/SelfNote'
 import Mine from '../Mine/Mine'
 export default {
   name: 'Index',
-  components: { Treasure, Waybill, Mine },
+  components: { NoteIndex, SelfNote, Mine },
   data () {
     return {
       showPages: 2
@@ -28,10 +28,10 @@ export default {
   },
   watch: {
     '$route.name': function (newVal, oldVal) {
-      if (newVal === 'Treasure') {
+      if (newVal === 'NoteIndex') {
         this.showPages = 1
       }
-      if (newVal === 'Waybill') {
+      if (newVal === 'SelfNote') {
         this.showPages = 2
       }
       if (newVal === 'Mine') {

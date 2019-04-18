@@ -21,8 +21,9 @@
 
 <script>
 import { Group, XInput, XButton } from 'vux'
-import LoginAjax from '@/api/Login/Login'
-import MyCenterAjax from '@/api/MyCenter/MyCenter'
+import {mapState} from 'vuex'
+// import LoginAjax from '@/api/Login/Login'
+// import MyCenterAjax from '@/api/MyCenter/MyCenter'
 export default {
   name: 'Login',
   data () {
@@ -47,6 +48,9 @@ export default {
     }
     this.getPhoneInfo()
   },
+  computed: {
+    ...mapState(['userInfo'])
+  },
   methods: {
     handleLogin () {
       this.$axios.post('/login', this.form).then(res => {
@@ -55,6 +59,7 @@ export default {
             type: 'success',
             text: '登录成功'
           })
+          this.$store.commit('CHANGE_userInfo', res.userData)
           sessionStorage.setItem('userInfo', JSON.stringify(res.userData))
           this.$router.push({name: 'Index'})
         } else {
@@ -78,67 +83,67 @@ export default {
       this.$router.push({name: 'Register'})
     },
     // 登录
-    login () {
-      if (this.form.account === '' && this.form.password !== '') {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '请输入用户名'
-        })
-      } else if (this.form.account !== '' && this.form.password === '') {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '请输入密码'
-        })
-      } else if (this.form.account === '' && this.form.password === '') {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '用户名和密码不能为空'
-        })
-      } else {
-        LoginAjax.Login({account: this.form.account, password: this.form.password, loginType: 3}).then((response) => {
-          if (response.code === 200) {
-            if (this.form.remeberPass) {
-              this.setCookie({name: 'user', value: this.form.account, day: 7}) // 保存帐号到cookie，有效期7天
-              this.setCookie({name: 'pswd', value: this.base64encode(this.form.password), day: 7}) // 保存密码到cookie，有效期7天
-            }
-            let token = response.data.token
-            sessionStorage.setItem('token', token)
-            sessionStorage.setItem('userInfo', JSON.stringify(response.data))
-            this.$vux.toast.show({
-              type: 'success',
-              text: '登录成功！'
-            })
-            MyCenterAjax.queryUserInfo({userId: response.data.userId}).then((response) => {
-              if (response.code === 200) {
-                if (response.data) {
-                  sessionStorage.setItem('driverInfo', JSON.stringify(response.data))
-                }
-              }
-            })
-            LoginAjax.QueryUserState().then((res) => {
-              if (res.code === 200) {
-                if (response.data.firstLogin === 0) {
-                  this.$router.push({name: 'FirstChangePwd'})
-                } else {
-                  this.$router.push({name: 'Index'})
-                }
-              }
-            })
-          } else {
-            this.$vux.toast.show({
-              type: 'warn',
-              text: response.message
-            })
-          }
-        }).catch((err) => {
-          this.$vux.toast.show({
-            type: 'warn',
-            text: err.message
-          })
-          console.clear()
-        })
-      }
-    },
+    // login () {
+    //   if (this.form.account === '' && this.form.password !== '') {
+    //     this.$vux.toast.show({
+    //       type: 'warn',
+    //       text: '请输入用户名'
+    //     })
+    //   } else if (this.form.account !== '' && this.form.password === '') {
+    //     this.$vux.toast.show({
+    //       type: 'warn',
+    //       text: '请输入密码'
+    //     })
+    //   } else if (this.form.account === '' && this.form.password === '') {
+    //     this.$vux.toast.show({
+    //       type: 'warn',
+    //       text: '用户名和密码不能为空'
+    //     })
+    //   } else {
+    //     LoginAjax.Login({account: this.form.account, password: this.form.password, loginType: 3}).then((response) => {
+    //       if (response.code === 200) {
+    //         if (this.form.remeberPass) {
+    //           this.setCookie({name: 'user', value: this.form.account, day: 7}) // 保存帐号到cookie，有效期7天
+    //           this.setCookie({name: 'pswd', value: this.base64encode(this.form.password), day: 7}) // 保存密码到cookie，有效期7天
+    //         }
+    //         let token = response.data.token
+    //         sessionStorage.setItem('token', token)
+    //         sessionStorage.setItem('userInfo', JSON.stringify(response.data))
+    //         this.$vux.toast.show({
+    //           type: 'success',
+    //           text: '登录成功！'
+    //         })
+    //         MyCenterAjax.queryUserInfo({userId: response.data.userId}).then((response) => {
+    //           if (response.code === 200) {
+    //             if (response.data) {
+    //               sessionStorage.setItem('driverInfo', JSON.stringify(response.data))
+    //             }
+    //           }
+    //         })
+    //         LoginAjax.QueryUserState().then((res) => {
+    //           if (res.code === 200) {
+    //             if (response.data.firstLogin === 0) {
+    //               this.$router.push({name: 'FirstChangePwd'})
+    //             } else {
+    //               this.$router.push({name: 'Index'})
+    //             }
+    //           }
+    //         })
+    //       } else {
+    //         this.$vux.toast.show({
+    //           type: 'warn',
+    //           text: response.message
+    //         })
+    //       }
+    //     }).catch((err) => {
+    //       this.$vux.toast.show({
+    //         type: 'warn',
+    //         text: err.message
+    //       })
+    //       console.clear()
+    //     })
+    //   }
+    // },
     isCompatibilityPhone (navigator) {
       return /iphone/gi.test(navigator.userAgent) && (screen.height === 812 && screen.width === 375)
     },
