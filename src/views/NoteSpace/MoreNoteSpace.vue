@@ -32,7 +32,7 @@
       </transition>
      <div class="content">
        <!-- 有运单 -->
-       <div v-if="articleData.length > 0"  class="c-waybill">
+       <div v-if="articleData.length > 0 && !showLoading"  class="c-waybill">
         <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh">
           <ul class="c-w-wrap">
             <li class="c-w-item" v-for="(item, index) in articleData" :key="index">
@@ -47,20 +47,20 @@
                     <div class="t-title">{{item.author.username}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
-                  <div class="t-r-bottom">{{item.updateTime}}</div>
+                  <div class="t-r-bottom">{{item.createTime}}</div>
                 </div>
               </div>
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
                 <div class="b-look">&nbsp;浏览 {{item.readnumber}} 次</div>
-                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
+                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;{{item.commonnum}}</div>
               </div>
             </li>
           </ul>
         </van-pull-refresh>
        </div>
       <!-- 无运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0" class="noBill">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0 && !showLoading" class="noBill">
         <div class="imgWrap">
           <img src="../../image/noInfo.png" alt="">
         </div>
@@ -78,7 +78,7 @@
           <div class="dateWrap">
             <div class="dateLi">
               <datetime
-                v-model="param.updateTime"
+                v-model="param.createTime"
                 placeholder="选择日期"
                 @on-change="changeDate"
                 @on-cancel="log('cancel')"
@@ -94,11 +94,14 @@
         </div>
       </popup>
     </div>
+    <div v-transfer-dom>
+      <loading :show="showLoading" text="Loading..."></loading>
+    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput } from 'vux'
+import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Loading, Datetime, XInput } from 'vux'
 import { PullRefresh } from 'vant'
 export default {
   name: 'MoreNote',
@@ -110,6 +113,7 @@ export default {
     Flexbox,
     FlexboxItem,
     TransferDom,
+    Loading,
     Datetime,
     XInput
   },
@@ -118,10 +122,11 @@ export default {
   },
   data () {
     return {
+      showLoading: false,
       articleData: [],
       param: {
         categoryId: '',
-        updateTime: ''
+        createTime: ''
       },
       userId: '',
       userInfo: {},
@@ -134,6 +139,12 @@ export default {
       isLoading: false,
       selectShow: false
     }
+  },
+  created () {
+    this.showLoading = true
+    this.getCategory()
+    this.getData()
+    this.queryUserInfo()
   },
   methods: {
     // 删除文章
@@ -216,8 +227,9 @@ export default {
     getData () {
       this.$axios.post('/allArticleContent', this.param).then(res => {
         if (res.code === 200) {
+          this.showLoading = false
           this.articleData = res.data.map(item => {
-            item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            item.createTime = this.renderTime(item.createTime).substring(0, 16)
             if (item.praiseList.length > 0) {
               if (item.praiseList.includes(this.userId)) {
                 item.praise = 1
@@ -274,13 +286,14 @@ export default {
     log () {},
     // 重置筛选
     reset () {
-      this.param.updateTime = ''
+      this.param.createTime = ''
       // this.waybillQueryParam.createTimeStart = ''
     },
     // 确定筛选
     sure () {
-      this.getData()
       this.showPop = false
+      this.showLoading = true
+      this.getData()
     },
     // 文章详情
     handleDetail (id) {
@@ -293,16 +306,12 @@ export default {
     },
     // 分类下的文章
     handleToStatus () {
+      this.selectShow = false
       setTimeout(() => {
-        this.selectShow = false
+        this.showLoading = true
         this.getData(this.param)
       }, 200)
     }
-  },
-  created () {
-    this.getCategory()
-    this.getData()
-    this.queryUserInfo()
   },
   computed: {
     categoryStatus () {
@@ -546,15 +555,15 @@ export default {
             width: 500px;
             height: 20px;
             line-height: 20px;
-            font-size: 12px;
+            font-size: 16px;
             color: #5C6066;
           }
           .no_praise {
-            width: 40px;
+            width: 60px;
             height: 30px;
             line-height: 30px;
-            text-align: right;
-            font-size: 28px;
+            font-size: 18px;
+            display: flex;
             .img {
               width: 25px;
               height: 25px;
@@ -563,11 +572,11 @@ export default {
             }
           }
           .praise {
-            width: 40px;
+            width: 60px;
             height: 30px;
             line-height: 30px;
-            text-align: right;
-            font-size: 28px;
+            font-size: 18px;
+            display: flex;
             .img {
               width: 25px;
               height: 25px;
@@ -733,5 +742,13 @@ export default {
       line-height: 50px !important;
     }
   }
+}
+</style>
+<style lang="less">
+.weui-mask_transparent {
+  background: rgba(100, 100, 100, 0.5);
+}
+.weui-toast {
+  top: 500px;
 }
 </style>

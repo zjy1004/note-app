@@ -19,7 +19,7 @@
          {{time}}
        </div>
        <div class="c-text">
-         记录生活!学习!!心情!!!
+         记录生活!记录学习!!记录心情!!!
        </div>
        <div class="c-text">
          欢迎使用云笔记
@@ -126,7 +126,7 @@ export default {
       background:rgba(255,255,255,1);
     }
   .content {
-    height: 100%;
+    height: 1124px;
     width: 100%;
     display: flex;
     flex: 1;
@@ -175,7 +175,7 @@ export default {
     }
     .c-button {
       width: 100%;
-      height: 150px;
+      height: 100%;
       display: flex;
       flex: 1;
       flex-direction: column;

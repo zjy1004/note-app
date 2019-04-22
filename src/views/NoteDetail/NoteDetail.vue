@@ -6,7 +6,7 @@
       >
       <div v-if="this.$route.query.from === 'self'" @click="editArticle()" class="choose-btn" slot="right">修改</div>
      </x-header>
-    <div class="d-wrap">
+    <div v-if="!showLoading" class="d-wrap">
       <div class="wrap">
         <div class="w-header">
           <div class="top">
@@ -15,7 +15,7 @@
             </div>
             <div class="t-right">
               <div class="t-r-top">{{author.username}}</div>
-              <div class="t-r-middle">{{content.updateTime}}</div>
+              <div class="t-r-middle">{{content.createTime}}</div>
               <div class="t-r-bottom"><span>浏览: {{content.readnumber}} 次</span> <span>获赞: {{content.commonnum}} 次</span></div>
             </div>
           </div>
@@ -37,15 +37,19 @@
         </div>
       </div>
     </div>
+    <div v-transfer-dom>
+      <loading :show="showLoading" text="Loading..."></loading>
+    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { XHeader, Confirm, TransferDom } from 'vux'
+import { XHeader, Confirm, TransferDom, Loading } from 'vux'
 export default {
   name: '',
   data () {
     return {
+      showLoading: false,
       author: {},
       category: {},
       content: {}
@@ -54,12 +58,14 @@ export default {
   components: {
     XHeader,
     Confirm,
-    TransferDom
+    TransferDom,
+    Loading
   },
   directives: {
     TransferDom
   },
   created () {
+    this.showLoading = true
     this.getData()
   },
   methods: {
@@ -74,12 +80,18 @@ export default {
     getData () {
       let id = this.$route.query.id
       this.$axios.get(`/articleById/${id}`).then(res => {
-        console.log(res)
-        this.content = res.data
-        this.content.updateTime = this.renderTime(this.content.updateTime).substring(0, 19)
-        this.author = res.data.author
-        this.category = res.data.category
-        console.log(this.content)
+        if (res.code === 200) {
+          this.showLoading = false
+          this.content = res.data
+          this.content.createTime = this.renderTime(this.content.createTime).substring(0, 19)
+          this.author = res.data.author
+          this.category = res.data.category
+        } else {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: res.msg
+          })
+        }
       })
     }
   }
@@ -155,7 +167,7 @@ export default {
           line-height: 20px;
           margin-top: 10px;
           span {
-            font-size: 12px;
+            font-size: 16px;
             color: #5C6066;
           }
         }
@@ -226,8 +238,9 @@ export default {
     .w-i-wrap {
       margin-top: 20px;
       margin-left: 20px;
-      width: 400px;
-      height: 400px;
+      margin-right: 20px;
+      width: auto;
+      height: auto;
       img {
         width: 100%;
         height: 100%;
@@ -285,5 +298,13 @@ export default {
     background-color: rgba(229,229,229,1);
     height: 2px;
   }
+}
+</style>
+<style lang="less">
+.weui-mask_transparent {
+  background: rgba(100, 100, 100, 0.5);
+}
+.weui-toast {
+  top: 500px;
 }
 </style>

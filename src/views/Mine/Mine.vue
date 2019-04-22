@@ -21,7 +21,7 @@
          <div class="li" @click="routeLink('NoteSpace')">
           <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-pengyouquan1"></i></div>
-             <div class="title">云笔记</div>
+             <div class="title">笔记圈</div>
            </div>
           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
         </div>
@@ -253,6 +253,7 @@ export default {
       height: 480px;
       padding: 0 40px;
       display: flex;
+      margin-top: 50px;
       flex-direction: column;
       align-items: center;
       .li{

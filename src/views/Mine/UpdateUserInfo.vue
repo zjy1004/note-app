@@ -1,5 +1,5 @@
 <template>
-   <div class="register">
+   <div class="updateUserInfo">
      <x-header
       title="修改信息"
       :left-options="{backText: ''}"
@@ -116,10 +116,14 @@ export default {
 </script>
 
 <style scoped lang="less">
-.register {
+.updateUserInfo {
   // margin-top: 130px;
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex: 1;
+  // background: #F3F4F5;
+  flex-direction: column;
   .form {
     width: 100%;
     height: 100%;
@@ -205,7 +209,7 @@ export default {
 <style lang="less" scope>
 @import '~vux/src/styles/1px.less';
 @import '../../style/base.less';
-.register{
+.updateUserInfo{
   .vux-header{
     height: 90px;
     display: flex;

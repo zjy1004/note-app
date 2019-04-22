@@ -82,68 +82,6 @@ export default {
     register () {
       this.$router.push({name: 'Register'})
     },
-    // 登录
-    // login () {
-    //   if (this.form.account === '' && this.form.password !== '') {
-    //     this.$vux.toast.show({
-    //       type: 'warn',
-    //       text: '请输入用户名'
-    //     })
-    //   } else if (this.form.account !== '' && this.form.password === '') {
-    //     this.$vux.toast.show({
-    //       type: 'warn',
-    //       text: '请输入密码'
-    //     })
-    //   } else if (this.form.account === '' && this.form.password === '') {
-    //     this.$vux.toast.show({
-    //       type: 'warn',
-    //       text: '用户名和密码不能为空'
-    //     })
-    //   } else {
-    //     LoginAjax.Login({account: this.form.account, password: this.form.password, loginType: 3}).then((response) => {
-    //       if (response.code === 200) {
-    //         if (this.form.remeberPass) {
-    //           this.setCookie({name: 'user', value: this.form.account, day: 7}) // 保存帐号到cookie，有效期7天
-    //           this.setCookie({name: 'pswd', value: this.base64encode(this.form.password), day: 7}) // 保存密码到cookie，有效期7天
-    //         }
-    //         let token = response.data.token
-    //         sessionStorage.setItem('token', token)
-    //         sessionStorage.setItem('userInfo', JSON.stringify(response.data))
-    //         this.$vux.toast.show({
-    //           type: 'success',
-    //           text: '登录成功！'
-    //         })
-    //         MyCenterAjax.queryUserInfo({userId: response.data.userId}).then((response) => {
-    //           if (response.code === 200) {
-    //             if (response.data) {
-    //               sessionStorage.setItem('driverInfo', JSON.stringify(response.data))
-    //             }
-    //           }
-    //         })
-    //         LoginAjax.QueryUserState().then((res) => {
-    //           if (res.code === 200) {
-    //             if (response.data.firstLogin === 0) {
-    //               this.$router.push({name: 'FirstChangePwd'})
-    //             } else {
-    //               this.$router.push({name: 'Index'})
-    //             }
-    //           }
-    //         })
-    //       } else {
-    //         this.$vux.toast.show({
-    //           type: 'warn',
-    //           text: response.message
-    //         })
-    //       }
-    //     }).catch((err) => {
-    //       this.$vux.toast.show({
-    //         type: 'warn',
-    //         text: err.message
-    //       })
-    //       console.clear()
-    //     })
-    //   }
-    // },
     isCompatibilityPhone (navigator) {
       return /iphone/gi.test(navigator.userAgent) && (screen.height === 812 && screen.width === 375)
     },
@@ -188,12 +126,13 @@ export default {
   height: 100%;
   width: 100%;
   display: flex;
+  flex: 1;
   flex-direction: column;
   background: #fff;
   .bg-con{
     width: 750px;
-    height: 590px;
-    background: url('../../../static/image/login6.png') no-repeat;
+    height: 470px;
+    background: url('../../../static/image/login6.jpg') no-repeat;
     background-size:  100% 100%;
   }
   .form-con{
@@ -231,6 +170,7 @@ export default {
     input{
       width: 600px;
       height: 80px;
+      line-height: 80px;
       outline: none;
       border: none;
       margin: 0;

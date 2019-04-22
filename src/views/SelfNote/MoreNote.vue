@@ -32,7 +32,7 @@
       </transition>
      <div class="content">
        <!-- 有运单 -->
-       <div v-if="articleData.length > 0"  class="c-waybill">
+       <div v-if="articleData.length > 0 && !showLoading"  class="c-waybill">
         <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh">
           <ul class="c-w-wrap">
             <li class="c-w-item" v-for="(item, index) in articleData" :key="index">
@@ -47,7 +47,7 @@
                     <div class="t-title">{{item.title}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
-                  <div class="t-r-bottom">{{item.updateTime}}</div>
+                  <div class="t-r-bottom">{{item.createTime}}</div>
                 </div>
               </div>
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
@@ -62,7 +62,7 @@
         </van-pull-refresh>
        </div>
       <!-- 无运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0" class="noBill">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0 && !showLoading" class="noBill">
         <div class="imgWrap">
           <img src="../../image/noInfo.png" alt="">
         </div>
@@ -80,7 +80,7 @@
           <div class="dateWrap">
             <div class="dateLi">
               <datetime
-                v-model="param.updateTime"
+                v-model="param.createTime"
                 placeholder="选择日期"
                 @on-change="changeDate"
                 @on-cancel="log('cancel')"
@@ -105,17 +105,21 @@
         <p style="text-align:center;">确定删除此文章？</p>
       </confirm>
     </div>
+    <div v-transfer-dom>
+      <loading :show="showLoading" text="Loading..."></loading>
+    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput, Confirm } from 'vux'
+import { Checker, CheckerItem, Loading, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput, Confirm } from 'vux'
 import { PullRefresh } from 'vant'
 export default {
   name: 'MoreNote',
   components: {
     Checker,
     CheckerItem,
+    Loading,
     [PullRefresh.name]: PullRefresh,
     Popup,
     Flexbox,
@@ -130,12 +134,13 @@ export default {
   },
   data () {
     return {
+      showLoading: false,
       showDel: false,
       delId: '',
       articleData: [],
       param: {
         categoryId: '',
-        updateTime: ''
+        createTime: ''
       },
       categories: [],
       lifeId: '',
@@ -146,6 +151,11 @@ export default {
       isLoading: false,
       selectShow: false
     }
+  },
+  created () {
+    this.showLoading = true
+    this.getCategory()
+    this.getData()
   },
   methods: {
     // 删除文章
@@ -198,8 +208,9 @@ export default {
     getData () {
       this.$axios.post('/articleContent', this.param).then(res => {
         if (res.code === 200) {
+          this.showLoading = false
           this.articleData = res.data.map(item => {
-            item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            item.createTime = this.renderTime(item.createTime).substring(0, 16)
             return item
           })
         }
@@ -246,13 +257,13 @@ export default {
     log () {},
     // 重置筛选
     reset () {
-      this.param.updateTime = ''
-      // this.waybillQueryParam.createTimeStart = ''
+      this.param.createTime = ''
     },
     // 确定筛选
     sure () {
-      this.getData()
       this.showPop = false
+      this.showLoading = true
+      this.getData()
     },
     // 文章详情
     handleDetail (id) {
@@ -265,15 +276,12 @@ export default {
     },
     // 分类下的文章
     handleToStatus () {
+      this.selectShow = false
       setTimeout(() => {
-        this.selectShow = false
+        this.showLoading = true
         this.getData(this.param)
       }, 200)
     }
-  },
-  created () {
-    this.getCategory()
-    this.getData()
   },
   computed: {
     categoryStatus () {
@@ -517,7 +525,7 @@ export default {
             width: 500px;
             height: 20px;
             line-height: 20px;
-            font-size: 12px;
+            font-size: 16px;
             color: #5C6066;
           }
           .b-del {
@@ -584,6 +592,12 @@ export default {
 </style>
 
 <style lang="less">
+.weui-mask_transparent {
+  background: rgba(100, 100, 100, 0.5);
+}
+.weui-toast {
+  top: 500px;
+}
 .popupRight {
     .searchBar {
       height: 300px;

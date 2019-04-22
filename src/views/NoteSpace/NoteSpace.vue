@@ -2,14 +2,14 @@
    <div class="waybill">
       <!-- <div class="c-header">云笔记</div> -->
       <x-header
-      title="云笔记"
+      title="笔记圈"
       :left-options="{backText: ''}"
     />
       <!-- 有运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length > 0" class="content">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length > 0 && !showLoading" class="content">
         <div class="c-waybill">
           <ul class="c-w-wrap">
-            <li class="c-w-item" v-for="(item, index) in articleData.slice(0, 4)" :key="index">
+            <li class="c-w-item" v-for="(item, index) in articleData.slice(0, 3)" :key="index">
               <div class="top"  @click="handleDetail(item._id)" >
                 <div class="t-left">
                   <img :src="item.author.avatar" alt="">
@@ -21,13 +21,13 @@
                     <div class="t-title">{{item.author.username}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
-                  <div class="t-r-bottom">{{item.updateTime}}</div>
+                  <div class="t-r-bottom">{{item.createTime}}</div>
                 </div>
               </div>
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
               <div class="bottom">
-                <div class="b-look" style="font-size: 12px;">&nbsp;浏览 {{item.readnumber}} 次</div>
-                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;</div>
+                <div class="b-look">&nbsp;浏览 {{item.readnumber}} 次</div>
+                <div class="no_praise" :class="{'praise': item.praise === 1}" @click="item.praise === 0 ? praise(item._id) : cancelPraise(item._id)"><div class="img"></div>&nbsp;{{item.commonnum}}</div>
               </div>
             </li>
           </ul>
@@ -37,11 +37,14 @@
         </div>
       </van-pull-refresh>
       <!-- 无运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0" class="noBill">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0 && !showLoading" class="noBill">
         <div class="imgWrap">
           <img src="../../image/noInfo.png" alt="">
         </div>
       </van-pull-refresh>
+      <div v-transfer-dom>
+        <loading :show="showLoading" text="Loading..."></loading>
+      </div>
     <!-- <footer-bar /> -->
    </div>
 </template>
@@ -50,24 +53,29 @@
 import FooterBar from '@/components/FooterBar/FooterBar'
 // import WaybillAjax from '@/api/WayBill/WayBill'
 import { PullRefresh } from 'vant'
-import { XHeader } from 'vux'
+import { XHeader, Loading, TransferDomDirective as TransferDom } from 'vux'
 export default {
   name: 'SelfNote',
-  components: { FooterBar, XHeader, [PullRefresh.name]: PullRefresh },
+  components: { FooterBar, XHeader, Loading, TransferDom, [PullRefresh.name]: PullRefresh },
+  directives: {
+    TransferDom
+  },
   data () {
     return {
+      showLoading: false,
       isLoading: false,
       praiseShow: false,
       userId: '',
       userInfo: {},
       param: {
         categoryId: '',
-        updateTime: ''
+        createTime: ''
       },
       articleData: []
     }
   },
   created () {
+    this.showLoading = true
     this.getData()
     this.queryUserInfo()
   },
@@ -118,8 +126,9 @@ export default {
     getData () {
       this.$axios.post('/allArticleContent', this.param).then(res => {
         if (res.code === 200) {
+          this.showLoading = false
           this.articleData = res.data.map(item => {
-            item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            item.createTime = this.renderTime(item.createTime).substring(0, 16)
             if (item.praiseList.length > 0) {
               if (item.praiseList.includes(this.userId)) {
                 item.praise = 1
@@ -212,7 +221,7 @@ export default {
       flex: 1;
       padding: 20px 30px;
       .c-w-wrap {
-        height: 1200px;
+        height: 810px;
         width: 100%;
         overflow: hidden;
         .c-w-item {
@@ -319,15 +328,15 @@ export default {
             width: 500px;
             height: 20px;
             line-height: 20px;
-            font-size: 12px;
+            font-size: 16px;
             color: #5C6066;
           }
           .no_praise {
-            width: 40px;
+            width: 60px;
             height: 30px;
             line-height: 30px;
-            text-align: right;
-            font-size: 28px;
+            font-size: 18px;
+            display: flex;
             .img {
               width: 25px;
               height: 25px;
@@ -336,11 +345,11 @@ export default {
             }
           }
           .praise {
-            width: 40px;
+            width: 60px;
             height: 30px;
             line-height: 30px;
-            text-align: right;
-            font-size: 28px;
+            font-size: 18px;
+            display: flex;
             .img {
               width: 25px;
               height: 25px;
@@ -425,5 +434,13 @@ export default {
       }
     }
   }
+}
+</style>
+<style lang="less">
+.weui-mask_transparent {
+  background: rgba(100, 100, 100, 0.5);
+}
+.weui-toast {
+  top: 500px;
 }
 </style>

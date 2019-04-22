@@ -1,8 +1,8 @@
 <template>
-   <div class="waybill">
+   <div class="selfNote">
       <div class="c-header">个人笔记</div>
       <!-- 有运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length > 0" class="content">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length > 0 && !showLoading" class="content">
         <div class="c-waybill">
           <ul class="c-w-wrap">
             <li class="c-w-item" v-for="(item, index) in articleData.slice(0, 3)" :key="index">
@@ -17,7 +17,7 @@
                     <div class="t-title">{{item.title}}</div>
                     <div class="t-category" :class="{'study': item.category.name === '学习', 'life': item.category.name === '生活', 'mood': item.category.name === '心情'}">{{item.category.name}}</div>
                   </div>
-                  <div class="t-r-bottom">{{item.updateTime}}</div>
+                  <div class="t-r-bottom">{{item.createTime}}</div>
                 </div>
               </div>
               <div class="content hidden" @click="handleDetail(item._id)" >{{item.contentText}}</div>
@@ -33,7 +33,7 @@
         </div>
       </van-pull-refresh>
       <!-- 无运单 -->
-      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0" class="noBill">
+      <van-pull-refresh v-model="isLoading" @refresh="waybillRefresh" v-if="articleData.length === 0 && !showLoading" class="noBill">
         <div class="imgWrap">
           <img src="../../image/noInfo.png" alt="">
           <div class="c-w-more">
@@ -41,6 +41,7 @@
           </div>
         </div>
       </van-pull-refresh>
+      <div class="content" v-if="showLoading"></div>
     <footer-bar />
     <div v-transfer-dom>
       <confirm v-model="showDel"
@@ -51,33 +52,38 @@
         <p style="text-align:center;">确定删除此文章？</p>
       </confirm>
     </div>
+    <div v-transfer-dom>
+      <loading :show="showLoading" text="Loading..."></loading>
+    </div>
    </div>
 </template>
 
 <script type="text/ecmascript-6">
 import FooterBar from '@/components/FooterBar/FooterBar'
 // import WaybillAjax from '@/api/WayBill/WayBill'
-import { Confirm, TransferDomDirective as TransferDom } from 'vux'
+import { Confirm, Loading, TransferDomDirective as TransferDom } from 'vux'
 import { PullRefresh } from 'vant'
 export default {
   name: 'SelfNote',
-  components: { FooterBar, [PullRefresh.name]: PullRefresh, Confirm },
+  components: { FooterBar, Loading, [PullRefresh.name]: PullRefresh, Confirm },
   directives: {
     TransferDom
   },
   data () {
     return {
+      showLoading: false,
       showDel: false,
       isLoading: false,
       delId: '',
       param: {
         categoryId: '',
-        updateTime: ''
+        createTime: ''
       },
       articleData: []
     }
   },
   created () {
+    this.showLoading = true
     this.getData()
     console.log(this.renderTime('2019-04-15T02:32:46.941Z'))
   },
@@ -112,8 +118,9 @@ export default {
     getData () {
       this.$axios.post('/articleContent', this.param).then(res => {
         if (res.code === 200) {
+          this.showLoading = false
           this.articleData = res.data.map(item => {
-            item.updateTime = this.renderTime(item.updateTime).substring(0, 16)
+            item.createTime = this.renderTime(item.createTime).substring(0, 16)
             return item
           })
           console.log(this.articleData)
@@ -155,7 +162,7 @@ export default {
 <style scoped lang="less">
 @import '~vux/src/styles/1px.less';
 @import '../../style/base.less';
-.waybill {
+.selfNote {
   height: 100%;
   width: 100%;
   display: flex;
@@ -312,7 +319,7 @@ export default {
             width: 500px;
             height: 20px;
             line-height: 20px;
-            font-size: 12px;
+            font-size: 16px;
             color: #5C6066;
           }
           .b-del {
@@ -388,5 +395,39 @@ export default {
     height: 120px;
     width: 100%
   }
+}
+</style>
+<style lang="less">
+.weui-mask_transparent {
+  background: rgba(100, 100, 100, 0.5);
+}
+.weui-toast {
+  top: 500px;
+}
+</style>
+<style scoped lang="less">
+@import '~vux/src/styles/1px.less';
+@import '../../style/base.less';
+.selfNote {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  .weui-mask {
+    background: rgba(255, 255, 255, 0.5)
+  }
+  .van-pull-refresh {
+    height: 100%;
+    overflow: auto;
+    /deep/ .van-pull-refresh__track {
+      height: 100%;
+    }
+  }
+  /deep/ .van-pull-refresh__text {
+      font-size: 28px;
+    }
+  /deep/ .van-pull-refresh__loading span{
+      font-size: 28px;
+    }
 }
 </style>

@@ -118,10 +118,14 @@ export default {
   // margin-top: 130px;
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   .form {
     width: 100%;
     height: 100%;
-    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px;
   }
   .avatar {
     width: 100%;
@@ -171,6 +175,7 @@ export default {
         // width: 600px;
         width: 100%;
         height: 80px;
+        line-height: 80px;
         outline: none;
         border: none;
         font-size: 28px;
@@ -196,7 +201,7 @@ export default {
   }
   .submit-con1{
     flex: 1;
-    background: #fff;
+    // background: #fff;
   }
 }
 </style>
