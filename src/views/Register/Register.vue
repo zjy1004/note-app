@@ -44,6 +44,26 @@
           <input type="password" v-model="form.passagain" placeholder="请再次输入密码">
         </div>
       </div>
+      <div class="item">
+        <div class="item-label">
+          手机号:
+        </div>
+        <div class="item-input">
+          <input type="text" v-model="form.tel" placeholder="请输入手机号">
+        </div>
+      </div>
+      <div class="item2">
+        <div class="get" v-show="timeShow" @click="getCode()">获取验证码</div>
+        <div class="done" v-show="!timeShow">{{timeNum}}s后重新获取</div>
+      </div>
+      <div class="item">
+        <div class="item-label">
+          验证码:
+        </div>
+        <div class="item-input">
+          <input type="" v-model="codeNum" placeholder="请输入验证码">
+        </div>
+      </div>
       <div class="submit-con1">
         <div class="submit-con" @click="confirm()">提交</div>
       </div>
@@ -58,11 +78,16 @@ export default {
   name: 'Register',
   data () {
     return {
+      timeShow: true,
+      timeNum: '',
+      code: 104059,
+      codeNum: '',
       form: {
         avatar: '',
         username: '',
         email: '',
         password: '',
+        tel: '',
         passagain: ''
       }
     }
@@ -78,6 +103,38 @@ export default {
       this.$refs.upImg.src = file.content
       console.log(file)
       this.form.avatar = file.content
+    },
+    getCode () {
+      this.getCountDown()
+      const text = '验证码：' + this.code + ',您正在使用注册功能,该验证码仅用于身份验证,在1分钟之内有效，请勿泄露给其他人使用。' // 短信内容模板，已经在sms平台绑定此内容，所以会比普通的更快到达用户手机。
+      let param = new URLSearchParams()
+      param.append('Uid', 'Zjy1004')
+      param.append('Key', 'd41d8cd98f00b204e980')
+      param.append('smsMob', this.form.tel)
+      param.append('smsText', text)
+      this.$axios.post('http://utf8.api.smschinese.cn', param, {// post请求，在请求时会自动把param拼接再Param后面
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'// 必须要加头
+        }
+      }).then(function (response) {
+        console.log(response)
+      })
+    },
+    getCountDown () { // 倒计时
+      const TIME_COUNT = 60
+      if (!window.timer) {
+        this.timeNum = TIME_COUNT
+        this.timeShow = false
+        window.timer = setInterval(() => {
+          if (this.timeNum > 0 && this.timeNum <= TIME_COUNT) {
+            this.timeNum--
+          } else {
+            this.timeShow = true
+            clearInterval(window.timer)
+            window.timer = null
+          }
+        }, 1000)
+      }
     },
     confirm () {
       if (this.form.password === '') {
@@ -96,17 +153,24 @@ export default {
           text: '密码不一致，请重新输入'
         })
       } else {
-        this.$axios.post('/user', this.form).then(res => {
-          if (res.code === 200) {
-            this.$vux.toast.show({
-              type: 'success',
-              text: '注册成功'
-            })
-            setTimeout(() => {
-              this.$router.push({name: 'Login'})
-            }, 1000)
-          }
-        })
+        if (this.codeNum !== '104059') {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: '验证码错误'
+          })
+        } else {
+          this.$axios.post('/user', this.form).then(res => {
+            if (res.code === 200) {
+              this.$vux.toast.show({
+                type: 'success',
+                text: '注册成功'
+              })
+              setTimeout(() => {
+                this.$router.push({name: 'Login'})
+              }, 1000)
+            }
+          })
+        }
       }
     }
   }
@@ -154,6 +218,26 @@ export default {
         }
       }
     }
+  }
+  .item2 {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    text-align: right;
+    margin-top: 10px;
+    .get {
+      width: 100%;
+      height: 100%;
+      text-align: right;
+      color: #409eff;
+    }
+    .done {
+      width: 100%;
+      height: 100%;
+      text-align: right;
+      color: #aaa;
+    }
+    // margin-top: 20px;
   }
   .item {
     height: 100px;

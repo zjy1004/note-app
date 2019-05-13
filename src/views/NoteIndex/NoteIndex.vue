@@ -101,6 +101,7 @@ export default {
     nowTime () {
       setInterval(() => {
         this.getDate(new Date())
+        // console.log(new Date())
       }, 1000)
       clearInterval()
     }

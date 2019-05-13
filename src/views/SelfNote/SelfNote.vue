@@ -85,7 +85,7 @@ export default {
   created () {
     this.showLoading = true
     this.getData()
-    console.log(this.renderTime('2019-04-15T02:32:46.941Z'))
+    // console.log(this.renderTime(new Date()).substring(0, 10))
   },
   methods: {
     handleToWrite () {

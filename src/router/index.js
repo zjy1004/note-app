@@ -47,6 +47,11 @@ export default new Router({
       component: () => import('@/views/SelfNote/SelfNote')
     },
     {
+      path: '/noteStatistics',
+      name: 'NoteStatistics',
+      component: () => import('@/views/SelfNote/NoteStatistics')
+    },
+    {
       path: '/moreNote',
       name: 'MoreNote',
       component: () => import('@/views/SelfNote/MoreNote')

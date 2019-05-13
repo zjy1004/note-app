@@ -25,6 +25,13 @@
            </div>
           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
         </div>
+        <div class="li" @click="routeLink('NoteStatistics')">
+          <div class="c-m-left">
+             <div class="icon"><i class="iconfont icon-pengyouquan1"></i></div>
+             <div class="title">笔记统计</div>
+           </div>
+          <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
+        </div>
          <div class="li" @click="routeLink('Setting')">
            <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-ai-set"></i></div>
